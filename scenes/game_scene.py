@@ -40,7 +40,17 @@ class GameScene:
 
     def update(self, dt):
         keys = pygame.key.get_pressed()
-        self.player.handle_input(keys)
+        mouse_buttons = pygame.mouse.get_pressed()
+        mouse_pos = pygame.mouse.get_pos()
+        camera_offset = self.camera.offset
+
+        self.player.handle_input(
+            keys,
+            mouse_buttons,
+            mouse_pos,
+            camera_offset
+        )
+
         self.player.update(dt)
 
         self.weather.update(dt)

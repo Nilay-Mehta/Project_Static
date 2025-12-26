@@ -17,6 +17,10 @@ class Player(Entity):
                         height=PLAYER_HEIGHT,
                         max_health=PLAYER_MAX_HEALTH)
 
+        # Stamina system (required by HUD)
+        self.stamina = 100
+        self.max_stamina = 100
+
         # Movement
         self.speed = PLAYER_SPEED
         self.color = PLAYER_COLOR
