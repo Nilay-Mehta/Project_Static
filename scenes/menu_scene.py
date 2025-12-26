@@ -14,7 +14,7 @@ class MenuScene:
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RETURN:
+            if event.key == MENU_START_KEY:  # ⬅ constant
                 self.game_manager.change_state(GameState.PLAYING)
 
     def update(self, dt):
@@ -23,14 +23,35 @@ class MenuScene:
     def render(self, screen):
         screen.fill(COLOR_BG)
 
-        title = self.title_font.render("NUCLEAR WASTELAND", True, COLOR_UI_HEALTH)
-        title_rect = title.get_rect(center=(SCREEN_WIDTH // 2, 200))
+        # -------------------------
+        # Title
+        # -------------------------
+        title = self.title_font.render(
+            MENU_TITLE_TEXT, True, COLOR_UI_HEALTH
+        )
+        title_rect = title.get_rect(
+            center=(SCREEN_WIDTH // 2, MENU_TITLE_Y)
+        )
         screen.blit(title, title_rect)
 
-        subtitle = self.font.render("Post-Apocalyptic Survival", True, COLOR_UI_TEXT)
-        subtitle_rect = subtitle.get_rect(center=(SCREEN_WIDTH // 2, 280))
+        # -------------------------
+        # Subtitle
+        # -------------------------
+        subtitle = self.font.render(
+            MENU_SUBTITLE_TEXT, True, COLOR_UI_TEXT
+        )
+        subtitle_rect = subtitle.get_rect(
+            center=(SCREEN_WIDTH // 2, MENU_SUBTITLE_Y)
+        )
         screen.blit(subtitle, subtitle_rect)
 
-        start_text = self.font.render("Press ENTER to Start", True, COLOR_UI_TEXT)
-        start_rect = start_text.get_rect(center=(SCREEN_WIDTH // 2, 400))
+        # -------------------------
+        # Start prompt
+        # -------------------------
+        start_text = self.font.render(
+            MENU_START_TEXT, True, COLOR_UI_TEXT
+        )
+        start_rect = start_text.get_rect(
+            center=(SCREEN_WIDTH // 2, MENU_START_Y)
+        )
         screen.blit(start_text, start_rect)

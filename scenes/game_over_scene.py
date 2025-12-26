@@ -15,11 +15,12 @@ class GameOverScene:
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RETURN:
+            if event.key == GAME_OVER_RESTART_KEY:   # ⬅ constant
                 self.game_manager.game_scene = GameScene(self.game_manager)
                 self.game_manager.scenes[GameState.PLAYING] = self.game_manager.game_scene
                 self.game_manager.change_state(GameState.PLAYING)
-            elif event.key == pygame.K_q:
+
+            elif event.key == GAME_OVER_MENU_KEY:    # ⬅ constant
                 self.game_manager.change_state(GameState.MENU)
 
     def update(self, dt):
@@ -28,14 +29,35 @@ class GameOverScene:
     def render(self, screen):
         screen.fill(COLOR_BG)
 
-        title = self.font.render("YOU DIED", True, COLOR_UI_HEALTH)
-        title_rect = title.get_rect(center=(SCREEN_WIDTH // 2, 250))
+        # -------------------------
+        # Game Over Title
+        # -------------------------
+        title = self.font.render(
+            GAME_OVER_TITLE_TEXT, True, COLOR_UI_HEALTH
+        )
+        title_rect = title.get_rect(
+            center=(SCREEN_WIDTH // 2, GAME_OVER_TITLE_Y)
+        )
         screen.blit(title, title_rect)
 
-        restart_text = self.menu_font.render("ENTER - Restart", True, COLOR_UI_TEXT)
-        restart_rect = restart_text.get_rect(center=(SCREEN_WIDTH // 2, 350))
+        # -------------------------
+        # Restart prompt
+        # -------------------------
+        restart_text = self.menu_font.render(
+            GAME_OVER_RESTART_TEXT, True, COLOR_UI_TEXT
+        )
+        restart_rect = restart_text.get_rect(
+            center=(SCREEN_WIDTH // 2, GAME_OVER_RESTART_Y)
+        )
         screen.blit(restart_text, restart_rect)
 
-        quit_text = self.menu_font.render("Q - Main Menu", True, COLOR_UI_TEXT)
-        quit_rect = quit_text.get_rect(center=(SCREEN_WIDTH // 2, 400))
+        # -------------------------
+        # Quit to menu prompt
+        # -------------------------
+        quit_text = self.menu_font.render(
+            GAME_OVER_MENU_TEXT, True, COLOR_UI_TEXT
+        )
+        quit_rect = quit_text.get_rect(
+            center=(SCREEN_WIDTH // 2, GAME_OVER_MENU_Y)
+        )
         screen.blit(quit_text, quit_rect)
