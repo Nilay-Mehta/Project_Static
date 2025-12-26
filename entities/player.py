@@ -1,41 +1,43 @@
 import pygame
 from pygame.math import Vector2
 from entities.entity import Entity
-from enums import EntityType
-from config import (PLAYER_SPEED, PLAYER_MAX_HEALTH, PLAYER_MAX_STAMINA,
-                    PLAYER_MAX_RADIATION, RADIATION_DAMAGE_THRESHOLD)
+from constants import *
 
 
 class Player(Entity):
-    def __init__(self, x, y):
-        super().__init__(x, y, 32, 32, EntityType.PLAYER)
+    """
+    Player character with shooting and heart-based health.
+    All values loaded from constants.py
+    """
 
-        self.health = PLAYER_MAX_HEALTH
-        self.max_health = PLAYER_MAX_HEALTH
-        self.stamina = PLAYER_MAX_STAMINA
-        self.max_stamina = PLAYER_MAX_STAMINA
-        self.hunger = 100
-        self.thirst = 100
+    def __init__(self, x, y):
+        """Initialize player at position (x, y)."""
+        super().__init__(x, y,
+                        width=PLAYER_WIDTH,
+                        height=PLAYER_HEIGHT,
+                        max_health=PLAYER_MAX_HEALTH)
+
+        # Movement
+        self.speed = PLAYER_SPEED
+        self.color = PLAYER_COLOR
+
+        # Radiation system
         self.radiation = 0
         self.max_radiation = PLAYER_MAX_RADIATION
+        self.radiation_damage_threshold = PLAYER_RADIATION_THRESHOLD
+        self.radiation_damage_timer = 0
+        self.radiation_damage_interval = PLAYER_RADIATION_DAMAGE_INTERVAL
 
-        self.speed = PLAYER_SPEED
-        self.is_running = False
+        # Shooting
+        self.shoot_cooldown = 0
+        self.shoot_delay = PLAYER_SHOOT_DELAY
+        self.bullets = []
 
-        self.inventory = []
-        self.equipped_weapon = None
-        self.has_gas_mask = False
-        self.has_rad_suit = False
-
-        self.ammo = {"pistol": 30, "rifle": 60, "shotgun": 20}
-
-        self.radiation_resistance = 0
-        self.cold_resistance = 0
-        self.toxin_resistance = 0
-
-    def handle_input(self, keys):
+    def handle_input(self, keys, mouse_buttons, mouse_pos, camera_offset):
+        """Handle player input."""
         self.velocity = Vector2(0, 0)
 
+        # WASD movement
         if keys[pygame.K_w]:
             self.velocity.y = -1
         if keys[pygame.K_s]:
@@ -48,47 +50,97 @@ class Player(Entity):
         if self.velocity.length() > 0:
             self.velocity = self.velocity.normalize()
 
-        self.is_running = keys[pygame.K_LSHIFT] and self.stamina > 0
-        speed_multiplier = 1.5 if self.is_running else 1.0
-        self.velocity *= self.speed * speed_multiplier
+        self.velocity *= self.speed
+
+        # Shooting
+        if mouse_buttons[0] and self.shoot_cooldown <= 0:
+            self.shoot(mouse_pos, camera_offset)
+            self.shoot_cooldown = self.shoot_delay
+
+    def shoot(self, mouse_pos, camera_offset):
+        """Create a bullet towards mouse position."""
+        target_x = mouse_pos[0] + camera_offset[0]
+        target_y = mouse_pos[1] + camera_offset[1]
+
+        direction = Vector2(target_x - self.pos.x, target_y - self.pos.y)
+        if direction.length() > 0:
+            direction = direction.normalize()
+
+        bullet = Bullet(
+            self.pos.x + self.width // 2,
+            self.pos.y + self.height // 2,
+            direction
+        )
+        self.bullets.append(bullet)
 
     def update(self, dt):
+        """Update player state."""
         super().update(dt)
 
-        if self.is_running:
-            self.stamina = max(0, self.stamina - 30 * dt)
-        else:
-            self.stamina = min(self.max_stamina, self.stamina + 20 * dt)
+        self.shoot_cooldown = max(0, self.shoot_cooldown - dt)
 
-        self.hunger = max(0, self.hunger - 5 * dt / 60)
-        self.thirst = max(0, self.thirst - 8 * dt / 60)
+        # Radiation damage
+        if self.radiation > self.radiation_damage_threshold:
+            self.radiation_damage_timer += dt
 
-        if self.hunger <= 0 or self.thirst <= 0:
-            self.health -= 5 * dt
+            if self.radiation_damage_timer >= self.radiation_damage_interval:
+                self.take_damage(PLAYER_RADIATION_DAMAGE)
+                self.radiation_damage_timer = 0
 
-        if self.radiation > RADIATION_DAMAGE_THRESHOLD:
-            radiation_damage = (self.radiation - RADIATION_DAMAGE_THRESHOLD) * 0.1
-            self.health -= radiation_damage * dt
+        # Update bullets
+        for bullet in self.bullets[:]:
+            bullet.update(dt)
+            if not bullet.alive:
+                self.bullets.remove(bullet)
 
     def add_radiation(self, amount):
-        actual_radiation = amount * (1 - self.radiation_resistance / 100)
-        self.radiation = min(self.max_radiation, self.radiation + actual_radiation)
+        """Add radiation exposure."""
+        self.radiation = min(self.max_radiation, int(self.radiation + amount))
 
-    def heal(self, amount):
-        self.health = min(self.max_health, self.health + amount)
+    def render(self, screen, camera_offset):
+        """Render player and bullets."""
+        super().render(screen, camera_offset)
 
-    def eat(self, hunger_restore):
-        self.hunger = min(100, self.hunger + hunger_restore)
+        for bullet in self.bullets:
+            bullet.render(screen, camera_offset)
 
-    def drink(self, thirst_restore):
-        self.thirst = min(100, self.thirst + thirst_restore)
 
-    def use_rad_away(self, amount):
-        self.radiation = max(0, self.radiation - amount)
+class Bullet:
+    """Projectile fired by player - uses constants.py"""
 
-    def render(self, screen, camera_offset=(0, 0)):
-        color = (0, 150, 255)
-        pygame.draw.rect(screen, color,
-                         (self.rect.x - camera_offset[0],
-                          self.rect.y - camera_offset[1],
-                          self.width, self.height))
+    def __init__(self, x, y, direction):
+        """Create a bullet."""
+        self.pos = Vector2(x, y)
+        self.direction = direction
+        self.speed = PLAYER_BULLET_SPEED
+        self.damage = PLAYER_BULLET_DAMAGE
+        self.alive = True
+        self.lifetime = PLAYER_BULLET_LIFETIME
+        self.age = 0
+        self.rect = pygame.Rect(int(x), int(y),
+                               PLAYER_BULLET_SIZE, PLAYER_BULLET_SIZE)
+
+        # Visual
+        self.radius = PLAYER_BULLET_SIZE // 2
+        self.color = PLAYER_BULLET_COLOR
+
+    def update(self, dt):
+        """Update bullet position and lifetime."""
+        self.pos += self.direction * self.speed * dt
+
+        self.rect.x = int(self.pos.x - self.radius)
+        self.rect.y = int(self.pos.y - self.radius)
+
+        self.age += dt
+        if self.age >= self.lifetime:
+            self.alive = False
+
+    def render(self, screen, camera_offset):
+        """Render bullet as a circle."""
+        pygame.draw.circle(
+            screen,
+            self.color,
+            (int(self.pos.x - camera_offset[0]),
+             int(self.pos.y - camera_offset[1])),
+            self.radius
+        )

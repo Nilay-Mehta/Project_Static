@@ -1,0 +1,84 @@
+HOW TO USE CONSTANTS:
+
+1. Import constants at top of file:
+   from constants import *
+
+   or specific values:
+   from constants import PLAYER_MAX_HEALTH, MUTANT_BASIC_DAMAGE
+
+2. Use constants instead of hardcoded numbers:
+   BAD:  player = Player(100, 100, max_health=8)
+   GOOD: player = Player(100, 100)  # Uses PLAYER_MAX_HEALTH from constants
+
+3. To change game balance, edit constants.py:
+   - Want harder game? Increase MUTANT_BASIC_DAMAGE
+   - Want more health? Increase PLAYER_START_HEARTS
+   - Want faster bullets? Increase PLAYER_BULLET_SPEED
+
+4. All damage values:
+   HALF_HEART = 1 HP
+   FULL_HEART = 2 HP
+
+   Usage:
+   player.take_damage(HALF_HEART)
+   mutant.take_damage(FULL_HEART)
+
+5. Creating enemies:
+   # Mutants (melee)
+   basic = Mutant(x, y, "basic")   # Balanced
+   fast = Mutant(x, y, "fast")     # Quick but weak
+   tank = Mutant(x, y, "tank")     # Slow but strong
+
+   # Raiders (ranged)
+   raider = Raider(x, y)           # Keeps distance, shoots
+
+6. Updating enemies in game loop:
+   for mutant in mutants:
+       mutant.update(dt, player)
+
+   for raider in raiders:
+       raider.update(dt, player)
+
+7. Checking bullet collisions:
+   # Player bullets hitting enemies
+   for bullet in player.bullets:
+       for mutant in mutants:
+           if bullet.alive and mutant.alive and bullet.rect.colliderect(mutant.rect):
+               mutant.take_damage(bullet.damage)
+               bullet.alive = False
+               break
+
+   # Raider bullets hitting player
+   for raider in raiders:
+       for bullet in raider.bullets:
+           if bullet.alive and player.alive and bullet.rect.colliderect(player.rect):
+               player.take_damage(bullet.damage)
+               bullet.alive = False
+
+8. Rendering enemies:
+   for mutant in mutants:
+       mutant.render(screen, camera_offset)
+
+   for raider in raiders:
+       raider.render(screen, camera_offset)  # Bullets render automatically
+
+9. Colors for UI:
+   from constants import COLOR_UI_HEALTH, COLOR_UI_RADIATION_HIGH
+
+   pygame.draw.text(f"HP: {hp}", COLOR_UI_HEALTH)
+
+10. Balancing during playtesting:
+   - Raiders too hard? Lower RAIDER_DAMAGE or increase RAIDER_SHOOT_DELAY
+   - Mutants too easy? Increase MUTANT_BASIC_SPEED
+   - Game too hard? Lower MUTANT_SPAWN_INITIAL_INTERVAL
+
+
+ENEMY COMPARISON:
+┌─────────┬──────────────┬───────┬────────┬──────────┬──────────────┐
+│ Enemy   │ Health       │ Speed │ Damage │ Range    │ Behavior     │
+├─────────┼──────────────┼───────┼────────┼──────────┼──────────────┤
+│ Basic   │ 2 hearts     │ 80    │ Half   │ Melee    │ Chase        │
+│ Fast    │ 1.5 hearts   │ 150   │ Half   │ Melee    │ Fast chase   │
+│ Tank    │ 5 hearts     │ 50    │ Full   │ Melee    │ Slow chase   │
+│ Raider  │ 3 hearts     │ 100   │ Half   │ 300px    │ Kiting/shoot │
+└─────────┴──────────────┴───────┴────────┴──────────┴──────────────┘
