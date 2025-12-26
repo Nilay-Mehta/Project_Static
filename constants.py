@@ -117,6 +117,11 @@ COLOR_UI_HEALTH = (255, 50, 50)  # Red for health
 COLOR_UI_RADIATION_LOW = (100, 255, 100)  # Green
 COLOR_UI_RADIATION_MED = (255, 200, 0)  # Yellow
 COLOR_UI_RADIATION_HIGH = (255, 50, 50)  # Red
+# ═════════════════════════════════════════════════════════════════════════
+# UI FONT SIZES
+# ═════════════════════════════════════════════════════════════════════════
+UI_FONT_SIZE = 24
+UI_TITLE_FONT_SIZE = 72
 
 # ═════════════════════════════════════════════════════════════════════════
 # HELPER FUNCTIONS

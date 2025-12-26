@@ -7,6 +7,8 @@ from systems.hazard_zone import HazardZone
 from systems.weather import WeatherSystem
 from enums import HazardType, GameState
 from ui.hud import HUD
+from ui.health_bar import HealthBar
+from constants import COLOR_BG
 
 
 class GameScene:
@@ -20,6 +22,7 @@ class GameScene:
                              game_manager.screen.get_height())
         self.weather = WeatherSystem()
         self.hud = HUD()
+        self.healthbar = HealthBar()  
 
         self.mutants.append(Mutant(600, 200, "basic"))
         self.mutants.append(Mutant(800, 400, "fast"))
@@ -78,7 +81,7 @@ class GameScene:
             self.game_manager.change_state(GameState.GAME_OVER)
 
     def render(self, screen):
-        screen.fill((60, 55, 45))
+        screen.fill(COLOR_BG)
 
         for hazard in self.hazard_zones:
             hazard.render(screen, self.camera.offset)
@@ -91,4 +94,5 @@ class GameScene:
         for raider in self.raiders:
             raider.render(screen, self.camera.offset)
 
+        self.healthbar.render(screen, self.player.health)  
         self.hud.render(screen, self.player, self.weather)
