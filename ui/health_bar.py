@@ -24,14 +24,6 @@ class HealthBar:
             fill_ratio = max(0, min(HP_PER_HEART, hp_left)) / HP_PER_HEART
             fill_width = int(heart_width * fill_ratio)
 
-            # Heart border
-            pygame.draw.rect(
-                screen,
-                COLOR_UI_TEXT,
-                (heart_x, y, heart_width, HEALTH_BAR_HEIGHT),
-                HEALTH_BAR_BORDER_WIDTH  # ⬅ to be added
-            )
-
             # Heart fill (supports half-heart)
             if fill_width > 0:
                 pygame.draw.rect(
@@ -39,3 +31,11 @@ class HealthBar:
                     COLOR_UI_HEALTH,
                     (heart_x, y, fill_width, HEALTH_BAR_HEIGHT)
                 )
+
+            # Heart border
+            pygame.draw.rect(
+                screen,
+                COLOR_UI_TEXT,
+                (heart_x, y, heart_width, HEALTH_BAR_HEIGHT),
+                HEALTH_BAR_BORDER_WIDTH  # ⬅ to be added
+            )
