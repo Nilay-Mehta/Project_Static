@@ -37,6 +37,10 @@ class Player(Entity):
         self.shoot_delay = PLAYER_SHOOT_DELAY
         self.bullets = []
 
+        # Hazard resistance
+        self.has_gas_mask = False
+        self.cold_resistance = 40
+
     def handle_input(self, keys, mouse_buttons, mouse_pos, camera_offset):
         """Handle player input."""
         self.velocity = Vector2(0, 0)
