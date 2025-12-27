@@ -6,15 +6,9 @@ class HealthBar:
     def __init__(self, max_health=PLAYER_MAX_HEALTH):
         self.max_health = max_health
 
-    def render(self, screen, current_health):
+    def render(self, screen, current_health, x=HEALTH_BAR_X, y=HEALTH_BAR_Y_OFFSET):
         # Clamp health
         current_health = max(0, current_health)
-
-        # -------------------------
-        # Position (from constants)
-        # -------------------------
-        x = HEALTH_BAR_X              # ⬅ to be added
-        y = SCREEN_HEIGHT - HEALTH_BAR_Y_OFFSET  # ⬅ to be added
 
         # -------------------------
         # Heart-based rendering

@@ -129,8 +129,11 @@ UI_TITLE_FONT_SIZE = 72
 # ═════════════════════════════════════════════════════════════════════════
 HUD_PADDING_X = 10
 HUD_PADDING_Y = 10
-HUD_LINE_HEIGHT = 25
+HUD_LINE_HEIGHT = 15  # Exact height of text
+HUD_LINE_SPACING = 5  # Spacing between lines
 HUD_SECTION_SPACING = 30
+BAR_HEIGHT = 20  # Height of health, stamina bar
+BAR_SPACING = 5  # Vertical space between bars
 
 # ═════════════════════════════════════════════════════════════════════════
 # HEALTH BAR UI
@@ -138,7 +141,7 @@ HUD_SECTION_SPACING = 30
 HEALTH_BAR_WIDTH = 200
 HEALTH_BAR_HEIGHT = 20
 HEALTH_BAR_X = HUD_PADDING_X
-HEALTH_BAR_Y_OFFSET = 30
+HEALTH_BAR_Y_OFFSET = 8
 HEALTH_BAR_BORDER_WIDTH = 2
 
 # ═════════════════════════════════════════════════════════════════════════

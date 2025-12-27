@@ -1,11 +1,13 @@
 import pygame
 from constants import *
+from ui.health_bar import HealthBar
 
 
 class HUD:
     def __init__(self):
         self.font = pygame.font.Font(None, UI_FONT_SIZE)
         self.small_font = pygame.font.Font(None, UI_FONT_SIZE - 4)
+        self.health_bar = HealthBar()
 
     def render(self, screen, player, weather):
         y_pos = HUD_PADDING_Y
@@ -19,7 +21,10 @@ class HUD:
             COLOR_UI_HEALTH
         )
         screen.blit(health_text, (HUD_PADDING_X, y_pos))
-        y_pos += HUD_LINE_HEIGHT
+        y_pos += HUD_LINE_HEIGHT + BAR_SPACING
+
+        self.health_bar.render(screen, current_health=player.health, x=HUD_PADDING_X, y=y_pos)
+        y_pos += BAR_HEIGHT + BAR_SPACING
 
         # -------------------------
         # Stamina
@@ -30,7 +35,7 @@ class HUD:
             COLOR_UI_TEXT
         )
         screen.blit(stamina_text, (HUD_PADDING_X, y_pos))
-        y_pos += HUD_LINE_HEIGHT
+        y_pos += HUD_LINE_HEIGHT + HUD_LINE_SPACING
 
         # -------------------------
         # Radiation
